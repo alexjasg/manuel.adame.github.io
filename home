@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Manuel Adame</title>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Inter:wght@300;400;500&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100vh;background:#FAFAF8;color:#111;font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+:root{
+  --bg:#FAFAF8;--surface:#FFFFFF;--surface2:#F4F4F1;
+  --ink:#111111;--ink2:#555555;--ink3:#AAAAAA;
+  --line:#E8E8E4;--line2:#F0F0EC;
+  --green:#1E6B45;--green-t:rgba(30,107,69,.1);
+  --amber:#8A5C00;--amber-t:rgba(138,92,0,.1);
+  --red:#B91C1C;--red-t:rgba(185,28,28,.08);
+  --r:18px;--rm:12px;
+}
+.app{max-width:430px;margin:0 auto;padding-bottom:80px}
+.hdr{padding:52px 28px 0}
+.hdr-eye{font-size:9px;font-weight:500;letter-spacing:.24em;color:var(--ink3);text-transform:uppercase;margin-bottom:12px}
+.hdr-title{font-family:'Big Shoulders Display',sans-serif;font-size:56px;font-weight:900;color:var(--ink);line-height:.9;letter-spacing:-.01em;text-transform:uppercase}
+.rule{height:.5px;background:var(--line);margin:28px 28px 0}
+.clock-section{padding:32px 28px 24px;display:flex;flex-direction:column;align-items:center}
+.clock-tag{font-size:9px;font-weight:500;letter-spacing:.2em;color:var(--ink3);text-transform:uppercase;margin-bottom:18px}
+.clock-digits{font-family:'Share Tech Mono',monospace;font-size:76px;font-weight:400;color:var(--ink);line-height:1;letter-spacing:.04em;font-variant-numeric:tabular-nums;transition:color .3s}
+.clock-digits.late{color:var(--red)}
+.clock-ampm{font-family:'Inter',sans-serif;font-size:15px;font-weight:300;color:var(--ink3);margin-left:10px;vertical-align:middle;letter-spacing:.06em}
+.clock-date{font-size:11px;font-weight:300;color:var(--ink3);margin-top:12px;letter-spacing:.06em}
+.prog-wrap{padding:0 28px 28px;display:flex;align-items:center;gap:14px}
+.prog-track{flex:1;height:1px;background:var(--line);position:relative;overflow:visible}
+.prog-fill{position:absolute;top:0;left:0;height:100%;background:var(--ink);transition:width .55s cubic-bezier(.4,0,.2,1)}
+.prog-fill.mid{background:var(--amber)}
+.prog-fill.low{background:var(--ink3)}
+.prog-lbl{font-size:10px;font-weight:400;color:var(--ink3);white-space:nowrap;letter-spacing:.06em;font-variant-numeric:tabular-nums}
+.toggle-wrap{padding:0 28px 32px}
+.toggle-pill{display:flex;background:var(--surface2);border:0.5px solid var(--line);border-radius:50px;padding:3px;position:relative}
+.toggle-thumb{position:absolute;top:3px;bottom:3px;width:calc(50% - 3px);background:var(--ink);border-radius:46px;transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.toggle-thumb.right{transform:translateX(calc(100%))}
+.toggle-opt{flex:1;text-align:center;padding:11px 0;font-size:12px;font-weight:500;color:var(--ink3);border-radius:46px;cursor:pointer;transition:color .22s;position:relative;z-index:1;user-select:none;letter-spacing:.02em}
+.toggle-opt.active{color:#fff}
+.view{padding:0 28px 40px}
+.view.hidden{display:none}
+.sec-lbl{font-size:9px;font-weight:500;letter-spacing:.22em;color:var(--ink3);text-transform:uppercase;margin-bottom:16px;padding-left:1px;display:flex;align-items:center;gap:10px}
+.sec-lbl::after{content:'';flex:1;height:.5px;background:var(--line)}
+.act-list{display:flex;flex-direction:column;gap:8px}
+.act-card{background:var(--surface);border:0.5px solid var(--line);border-radius:var(--r);overflow:hidden;transition:border-color .25s,box-shadow .25s}
+.act-card.done{border-color:#AADBC0;box-shadow:0 0 0 3px rgba(30,107,69,.04)}
+.act-card:active{transform:scale(.995)}
+.act-row{display:flex;align-items:center;gap:14px;padding:16px 20px;cursor:pointer;transition:background .15s;user-select:none;-webkit-user-select:none}
+.act-row:active{background:var(--surface2)}
+.act-ico{width:36px;height:36px;border-radius:10px;background:var(--surface2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .25s}
+.act-ico svg{width:17px;height:17px;stroke:var(--ink3);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;transition:stroke .25s}
+.act-card.done .act-ico{background:#EAF4EE}
+.act-card.done .act-ico svg{stroke:var(--green)}
+.act-name{flex:1;font-size:14px;font-weight:400;color:var(--ink2);letter-spacing:.01em;transition:color .25s}
+.act-card.done .act-name{color:var(--green)}
+.act-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.act-pill{font-size:10px;font-weight:500;padding:3px 10px;border-radius:20px;transition:all .22s;white-space:nowrap;letter-spacing:.04em}
+.pill-done{background:#EAF4EE;color:var(--green);border:0.5px solid #AADBC0}
+.pill-pend{background:var(--surface2);color:var(--ink3);border:0.5px solid var(--line)}
+.act-chev{width:14px;height:14px;flex-shrink:0;transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.act-chev svg{width:14px;height:14px;stroke:#D0D0D0;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.act-chev.open{transform:rotate(180deg)}
+.act-body{max-height:0;overflow:hidden;transition:max-height .38s cubic-bezier(.4,0,.2,1)}
+.act-body.open{max-height:580px}
+.act-inner{padding:0 20px 20px;border-top:0.5px solid var(--line)}
+.upl-zone{margin-top:16px;border:1px dashed var(--line);border-radius:var(--rm);padding:24px 16px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;transition:border-color .2s,background .2s;text-align:center}
+.upl-zone:hover,.upl-zone:active{border-color:var(--ink3);background:var(--surface2)}
+.upl-zone svg{width:18px;height:18px;stroke:var(--ink3);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.upl-t{font-size:12px;font-weight:500;color:var(--ink2)}
+.upl-s{font-size:10px;font-weight:300;color:var(--ink3);letter-spacing:.04em}
+.fi{display:none}
+.thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.th-w{position:relative}
+.th-img{width:68px;height:68px;border-radius:8px;object-fit:cover;border:0.5px solid var(--line);display:block}
+.th-vid{width:68px;height:68px;border-radius:8px;border:0.5px solid var(--line);background:var(--surface2);display:flex;align-items:center;justify-content:center}
+.th-vid svg{width:18px;height:18px;stroke:var(--ink3);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.th-del{position:absolute;top:-5px;right:-5px;width:20px;height:20px;border-radius:50%;background:var(--ink);border:1.5px solid var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s}
+.th-del:active{transform:scale(.88)}
+.th-del svg{width:9px;height:9px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round}
+.upl-spin{font-size:10px;font-weight:300;color:var(--ink3);margin-top:8px;display:none;letter-spacing:.06em}
+.upl-spin.on{display:block}
+.act-note-ta{width:100%;margin-top:12px;padding:12px 14px;border:0.5px solid var(--line);border-radius:10px;font-size:13px;font-family:'Inter',inherit;font-weight:300;resize:none;min-height:56px;color:var(--ink);background:transparent;outline:none;transition:border-color .2s;line-height:1.55}
+.act-note-ta:focus{border-color:#888}
+.send-btn{display:none;width:100%;margin-top:12px;padding:14px;border-radius:50px;background:var(--ink);color:#fff;border:none;font-size:12px;font-weight:500;cursor:pointer;transition:opacity .2s,transform .15s;letter-spacing:.06em;text-transform:uppercase;align-items:center;justify-content:center;gap:8px}
+.send-btn.on{display:flex}
+.send-btn:hover{opacity:.82}
+.send-btn:active{transform:scale(.97)}
+.send-btn.sent{background:var(--green)}
+.send-btn svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.daynote-card{background:var(--surface);border:0.5px solid var(--line);border-radius:var(--r);overflow:hidden}
+.daynote-ta{width:100%;padding:18px 20px;border:none;font-size:13px;font-family:'Inter',inherit;font-weight:300;color:var(--ink);background:transparent;resize:none;min-height:96px;outline:none;line-height:1.65}
+.daynote-ta::placeholder{color:var(--ink3)}
+.daynote-foot{padding:12px 20px;border-top:0.5px solid var(--line);display:flex;justify-content:flex-end}
+.daynote-btn{padding:10px 24px;border-radius:50px;background:var(--ink);color:#fff;border:none;font-size:11px;font-weight:500;cursor:pointer;transition:opacity .2s,transform .15s;letter-spacing:.08em;text-transform:uppercase}
+.daynote-btn:active{transform:scale(.97)}
+.daynote-btn.ok{background:var(--green)}
+.cal-head-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.cal-head { font-family:'Big Shoulders Display',sans-serif; font-size: 36px; font-weight: 900; color: var(--ink); letter-spacing: -.01em; text-transform: uppercase; margin-bottom: 0; }
+.cal-nav-btn { background: none; border: none; cursor: pointer; color: var(--ink); padding: 8px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: background .2s; }
+.cal-nav-btn:hover { background: var(--surface2); }
+.cal-card { background: var(--surface); border: 0.5px solid var(--line); border-radius: var(--r); padding: 20px; }
+.cal-dow-row { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; margin-bottom: 5px; }
+.cal-week-row { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; margin-bottom: 5px; }
+.cal-dow { text-align: center; font-size: 9px; font-weight: 500; letter-spacing: .1em; color: var(--ink3); padding-bottom: 10px; text-transform: uppercase; }
+.art-col { color: var(--ink3); display: flex; align-items: center; justify-content: center; padding-bottom: 10px; }
+.cal-d { aspect-ratio: 1; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; border: 0.5px solid transparent; transition: all .18s; font-variant-numeric: tabular-nums; color: var(--ink2); }
+.cal-d:not(.emp):not(.fut):hover { border-color: var(--ink3); transform: scale(1.08); }
+.cal-d:not(.emp):not(.fut):active { transform: scale(.95); }
+.cal-d.today { border-color: var(--ink)!important; font-weight: 600; color: var(--ink)!important; }
+.cal-d.green { background: #EAF4EE; color: var(--green); }
+.cal-d.amber { background: #FDF4DC; color: var(--amber); }
+.cal-d.red { background: #FEF2F1; color: var(--red); }
+.cal-d.nodata { color: var(--line); }
+.cal-d.fut { color: var(--line); cursor: default; }
+.cal-d.emp { cursor: default; }
+.cal-art-sum { font-size: 10px; font-weight: 600; color: var(--ink2); background: var(--surface2); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-variant-numeric: tabular-nums; aspect-ratio: 1; }
+.cal-art-sum.zero { opacity: 0.3; }
+.cal-legend { display: flex; gap: 14px; margin-top: 16px; flex-wrap: wrap; }
+.leg { display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 300; color: var(--ink3); letter-spacing: .04em; }
+.leg-d { width: 7px; height: 7px; border-radius: 2px; }
+.loader { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 0; gap: 16px; }
+.spin { width: 22px; height: 22px; border: 1px solid var(--line); border-top-color: var(--ink); border-radius: 50%; animation: sp .75s linear infinite; }
+@keyframes sp { to { transform: rotate(360deg); } }
+.load-t { font-size: 10px; font-weight: 300; color: var(--ink3); letter-spacing: .12em; text-transform: uppercase; }
+.det-wrap { display: none; }
+.det-wrap.on { display: block; }
+.det-back { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 300; color: var(--ink3); cursor: pointer; margin-bottom: 20px; padding: 4px 0; transition: color .18s; letter-spacing: .04em; }
+.det-back:hover { color: var(--ink); }
+.det-back svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.det-date { font-family: 'Big Shoulders Display', sans-serif; font-size: 40px; font-weight: 900; color: var(--ink); text-transform: uppercase; letter-spacing: -.01em; margin-bottom: 4px; }
+.det-sub { font-size: 11px; font-weight: 300; color: var(--ink3); margin-bottom: 20px; letter-spacing: .04em; }
+.det-card { background: var(--surface); border: 0.5px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.det-row { display: flex; align-items: center; gap: 12px; padding: 13px 20px; border-bottom: 0.5px solid var(--line2); }
+.det-row:last-child { border-bottom: none; }
+.det-ico { width: 28px; height: 28px; border-radius: 8px; background: var(--surface2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.det-ico svg { width: 13px; height: 13px; stroke: var(--ink3); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.det-name { flex: 1; font-size: 12px; font-weight: 400; color: var(--ink2); letter-spacing: .01em; }
+.det-pill { font-size: 10px; font-weight: 500; padding: 3px 10px; border-radius: 20px; letter-spacing: .04em; }
+.det-pill.y { background: #EAF4EE; color: var(--green); border: 0.5px solid #AADBC0; }
+.det-pill.n { background: var(--surface2); color: var(--ink3); border: 0.5px solid var(--line); }
+.det-files { padding: 6px 20px 16px 60px; display: flex; flex-direction: column; gap: 4px; border-bottom: 0.5px solid var(--line2); }
+.det-files:last-child { border-bottom: none; }
+.det-a { font-size: 10px; font-weight: 300; color: var(--ink2); text-decoration: none; display: flex; align-items: center; gap: 4px; transition: color .15s; letter-spacing: .03em; }
+.det-a:hover { color: var(--ink); }
+.det-a svg { width: 10px; height: 10px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.det-note { margin-top: 14px; padding: 16px; background: var(--surface2); border-radius: var(--rm); font-size: 12px; font-weight: 300; color: var(--ink2); line-height: 1.7; letter-spacing: .02em; }
+.toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(12px); background: var(--ink); color: #fff; padding: 11px 24px; border-radius: 50px; font-size: 11px; font-weight: 500; opacity: 0; transition: all .28s cubic-bezier(.4,0,.2,1); pointer-events: none; white-space: nowrap; z-index: 999; letter-spacing: .06em; text-transform: uppercase; }
+.toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.err { background: var(--red); }
+.det-thumb-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+.det-thumb-wrap { width: 52px; height: 52px; border-radius: 8px; overflow: hidden; border: 0.5px solid var(--line); display: block; flex-shrink: 0; position: relative; }
+.det-thumb-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .2s; }
+.det-thumb-wrap:hover img { transform: scale(1.08); }
+</style>
+</head>
+<body>
+<div class="app">
+<div class="hdr">
+  <div class="hdr-eye">Proyecto artístico · 2026</div>
+  <div class="hdr-title">Manuel<br>Adame</div>
+</div>
+<div class="rule"></div>
+<div class="clock-section">
+  <div class="clock-tag">Hora · México Centro</div>
+  <div class="clock-digits" id="clk">00:00<span class="clock-ampm" id="clk-ap">AM</span></div>
+  <div class="clock-date" id="clk-date"></div>
+</div>
+<div class="prog-wrap">
+  <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  <div class="prog-lbl" id="prog-lbl">0 · 11</div>
+</div>
+<div class="toggle-wrap">
+  <div class="toggle-pill">
+    <div class="toggle-thumb" id="t-thumb"></div>
+    <div class="toggle-opt active" id="o-sub" onclick="sw('sub')">Subir actividad</div>
+    <div class="toggle-opt" id="o-his" onclick="sw('his')">Consultar historial</div>
+  </div>
+</div>
+<div class="view" id="v-sub">
+  <div class="sec-lbl">Actividades del día</div>
+  <div class="act-list" id="act-list"></div>
+  <div class="sec-lbl" style="margin-top:32px">Nota del día</div>
+  <div class="daynote-card">
+    <textarea class="daynote-ta" id="day-note" placeholder="Observaciones, cambios o contexto del día..."></textarea>
+    <div class="daynote-foot">
+      <button class="daynote-btn" id="note-btn" onclick="saveNote()">Guardar</button>
+    </div>
+  </div>
+</div>
+<div class="view hidden" id="v-his">
+  <div id="ld" class="loader"><div class="spin"></div><div class="load-t">Consultando registros</div></div>
+  <div id="cal-sec" style="display:none">
+    <div class="cal-head-nav">
+      <button class="cal-nav-btn" onclick="chMonth(-1)" aria-label="Mes anterior"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <div class="cal-head" id="cal-month-lbl">Mayo 2026</div>
+      <button class="cal-nav-btn" onclick="chMonth(1)" style="transform:rotate(180deg)" aria-label="Mes siguiente"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    </div>
+    <div class="cal-card">
+      <div class="cal-dow-row">
+        <div class="cal-dow">D</div><div class="cal-dow">L</div><div class="cal-dow">M</div>
+        <div class="cal-dow">X</div><div class="cal-dow">J</div><div class="cal-dow">V</div>
+        <div class="cal-dow">S</div><div class="art-col"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-1a6 6 0 0112 0v1"/><path d="M16 3.5c.83.48 1.5 1.35 1.5 2.5s-.67 2.02-1.5 2.5"/></svg></div>
+      </div>
+      <div id="cal-g"></div>
+      <div class="cal-legend">
+        <div class="leg"><div class="leg-d" style="background:#EAF4EE;border:0.5px solid #AADBC0"></div>Completo (10)</div>
+        <div class="leg"><div class="leg-d" style="background:#FDF4DC;border:0.5px solid #E8C96A"></div>Parcial (6-9)</div>
+        <div class="leg"><div class="leg-d" style="background:#FEF2F1;border:0.5px solid #F5A5A5"></div>Bajo (1-5)</div>
+        <div class="leg"><div class="leg-d" style="background:var(--surface2);border:0.5px solid var(--line)"></div>Sin registro</div>
+      </div>
+    </div>
+  </div>
+  <div class="det-wrap" id="det"></div>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const WH_SAVE='https://n8n.srv840532.hstgr.cloud/webhook/29d20e70-c549-49de-8a40-febc4c5563a1';
+const WH_GET='https://n8n.srv840532.hstgr.cloud/webhook/7d93d2c9-c4cc-4872-ac7a-b155833cc870';
+const ACTS=[
+  {id:'ejercicio',   name:'Ejercicio',             icon:'exercise'},
+  {id:'guitarra',    name:'Práctica de guitarra',  icon:'guitar'},
+  {id:'canto',       name:'Práctica de canto',     icon:'mic'},
+  {id:'grabacion',   name:'Grabación de contenido', icon:'camera'},
+  {id:'composicion', name:'Composición',           icon:'pen'},
+  {id:'conexion',    name:'Conectar con gente',    icon:'people'},
+  {id:'historia1',   name:'Historia 1',            icon:'photo'},
+  {id:'historia2',   name:'Historia 2',            icon:'photo'},
+  {id:'historia3',   name:'Historia 3',            icon:'photo'},
+  {id:'tklive',      name:'TikTok Live',           icon:'live'},
+  {id:'artistas',    name:'Artista contactado',    icon:'artist'},
+];
+const P={
+  exercise:`<circle cx="12" cy="5" r="2"/><path d="M3 14l3-3.5 3 3.5 3-3.5 3 3.5 3-3.5"/>`,
+  guitar:`<path d="M9.5 2.5L5.5 6.5l2 2-4.5 4.5a2 2 0 002.83 2.83l4.5-4.5 2 2 4-4-6-6z"/><circle cx="15" cy="9" r=".7" fill="currentColor"/>`,
+  mic:`<rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0014 0M12 19v3M8 22h8"/>`,
+  camera:`<path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/>`,
+  pen:`<path d="M17 3a2.83 2.83 0 014 4L7.5 20.5 2 22l1.5-5.5z"/>`,
+  people:`<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>`,
+  photo:`<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>`,
+  live:`<path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/>`,
+  artist:`<circle cx="12" cy="8" r="4"/><path d="M6 20v-1a6 6 0 0112 0v1"/><path d="M16 3.5c.83.48 1.5 1.35 1.5 2.5s-.67 2.02-1.5 2.5"/>`,
+  upload:`<polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/>`,
+  chevdown:`<polyline points="6 9 12 15 18 9"/>`,
+  send:`<line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>`,
+  check:`<polyline points="20 6 9 17 4 12"/>`,
+  close:`<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>`,
+  film:`<rect x="2" y="2" width="20" height="20" rx="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/>`,
+  link:`<path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>`,
+  back:`<polyline points="15 18 9 12 15 6"/>`,
+};
+function ic(k,w=17,h=17){return`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[k]}</svg>`}
+function todayMX(){return new Date().toLocaleDateString('en-CA',{timeZone:'America/Mexico_City'})}
+const TODAY = todayMX();
+let aD = {};
+let calD = {};
+let sending = {};
+const dateNow = new Date(new Date().toLocaleString('en-US',{timeZone:'America/Mexico_City'}));
+let navYear = dateNow.getFullYear();
+let navMonth = dateNow.getMonth();
+function slugAct(id){
+  const a = ACTS.find(x=>x.id===id);
+  if(!a) return id;
+  return a.name.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/\s+/g,'_');
+}
+function progSnapshot(){
+  const done = ACTS.filter(a=>aD[a.id]?.done).length;
+  return {
+    progreso_completadas: done,
+    progreso_total: ACTS.length,
+    progreso_porcentaje: Math.round(done/ACTS.length*100)
+  };
+}
+
+// ── PETICIÓN POST SIN PREFLIGHT CORS ────────────────────
+// Usar text/plain en vez de application/json evita el OPTIONS preflight.
+// n8n recibe el JSON como string y lo parsea igual en $json.body
+async function postNoCors(url, payload){
+  const rs = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+    body: JSON.stringify(payload)
+  });
+  if(!rs.ok) throw new Error('HTTP '+rs.status);
+  return rs;
+}
+
+async function dispatch(accion, extra={}){
+  const payload = {
+    accion,
+    fecha: TODAY,
+    ...progSnapshot(),
+    ...extra
+  };
+  return postNoCors(WH_SAVE, payload);
+}
+
+function toast(msg,err=false){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast on'+(err?' err':'');
+  setTimeout(()=>{t.className='toast'},2800);
+}
+function tick(){
+  const n=new Date(new Date().toLocaleString('en-US',{timeZone:'America/Mexico_City'}));
+  let h=n.getHours();
+  const m=String(n.getMinutes()).padStart(2,'0');
+  const s=String(n.getSeconds()).padStart(2,'0');
+  const ap=h>=12?'PM':'AM'; h=h%12||12;
+  const el=document.getElementById('clk');
+  el.childNodes[0].nodeValue=`${String(h).padStart(2,'0')}:${m}:${s}`;
+  document.getElementById('clk-ap').textContent=ap;
+  el.className='clock-digits'+(n.getHours()>=20?' late':'');
+}
+function setDate(){
+  const n=new Date(new Date().toLocaleString('en-US',{timeZone:'America/Mexico_City'}));
+  const days=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  const months=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  document.getElementById('clk-date').textContent=`${days[n.getDay()]} ${n.getDate()} de ${months[n.getMonth()]}`;
+}
+setInterval(tick,1000); tick(); setDate();
+function updProg(){
+  const {progreso_completadas:done, progreso_total:total, progreso_porcentaje:pct} = progSnapshot();
+  const fill=document.getElementById('prog-fill');
+  fill.style.width=pct+'%';
+  fill.className='prog-fill'+(pct===100?'':pct>=50?' mid':' low');
+  document.getElementById('prog-lbl').textContent=`${done} · ${total}`;
+}
+function sw(v){
+  const h=v==='his';
+  document.getElementById('o-sub').className='toggle-opt'+(h?'':' active');
+  document.getElementById('o-his').className='toggle-opt'+(h?' active':'');
+  document.getElementById('t-thumb').className='toggle-thumb'+(h?' right':'');
+  document.getElementById('v-sub').className='view'+(h?' hidden':'');
+  document.getElementById('v-his').className='view'+(h?'':' hidden');
+  if(h) {
+    navYear = parseInt(TODAY.split('-')[0]);
+    navMonth = parseInt(TODAY.split('-')[1]) - 1;
+    loadCal();
+  }
+}
+function buildActs(){
+  const list=document.getElementById('act-list');
+  list.innerHTML='';
+  ACTS.forEach(a=>{
+    const d=aD[a.id]||{done:false,files:[],note:''};
+    const el=document.createElement('div');
+    el.className='act-card'+(d.done?' done':'');
+    el.id='ac-'+a.id;
+    el.innerHTML=`
+      <div class="act-row" onclick="tog('${a.id}')">
+        <div class="act-ico">${ic(a.icon)}</div>
+        <div class="act-name">${a.name}</div>
+        <div class="act-right">
+          <span class="act-pill ${d.done?'pill-done':'pill-pend'}" id="pill-${a.id}">${d.done?'Listo':'Pendiente'}</span>
+          <div class="act-chev" id="chev-${a.id}">${ic('chevdown',14,14)}</div>
+        </div>
+      </div>
+      <div class="act-body" id="body-${a.id}">
+        <div class="act-inner">
+          <div class="upl-zone" onclick="document.getElementById('fi-${a.id}').click()">
+            ${ic('upload',18,18)}
+            <div class="upl-t">Subir evidencia</div>
+            <div class="upl-s">Solo fotos (máx. 3)</div>
+          </div>
+          <input type="file" class="fi" id="fi-${a.id}" accept="image/*" multiple onchange="onFiles('${a.id}',this)">
+          <div class="upl-spin" id="sp-${a.id}">Preparando archivos...</div>
+          <div class="thumbs" id="th-${a.id}"></div>
+          <textarea class="act-note-ta" id="n-${a.id}" placeholder="Nota de la actividad..." rows="2" onblur="pN('${a.id}')">${d.note||''}</textarea>
+          <button class="send-btn${d.done?' on':''}" id="sb-${a.id}" onclick="sendAct('${a.id}')">
+            ${ic('send',13,13)} Enviar registro
+          </button>
+        </div>
+      </div>`;
+    list.appendChild(el);
+    rTh(a.id, d.files||[]);
+  });
+  updProg();
+}
+function tog(id){
+  const b=document.getElementById('body-'+id);
+  const c=document.getElementById('chev-'+id);
+  const open=b.classList.contains('open');
+  document.querySelectorAll('.act-body.open').forEach(x=>x.classList.remove('open'));
+  document.querySelectorAll('.act-chev.open').forEach(x=>x.classList.remove('open'));
+  if(!open){b.classList.add('open');c.classList.add('open');}
+}
+function rTh(id,files){
+  const c=document.getElementById('th-'+id);
+  if(!c) return;
+  c.innerHTML='';
+  (files||[]).forEach((f,i)=>{
+    const w=document.createElement('div');
+    w.className='th-w';
+    w.innerHTML=`<img class="th-img" src="${f.url}" alt=""><button class="th-del" onclick="rmF('${id}',${i})" aria-label="Eliminar">${ic('close',9,9)}</button>`;
+    c.appendChild(w);
+  });
+}
+function rmF(id,i){
+  if(!aD[id]) return;
+  aD[id].files.splice(i,1);
+  if(!aD[id].files.length){
+    aD[id].done=false;
+    document.getElementById('ac-'+id).className='act-card';
+    document.getElementById('pill-'+id).className='act-pill pill-pend';
+    document.getElementById('pill-'+id).textContent='Pendiente';
+    document.getElementById('sb-'+id).className='send-btn';
+  }
+  rTh(id,aD[id].files);
+  updProg();
+}
+async function compressImage(file) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let w = img.width;
+        let h = img.height;
+        const max = 1200;
+        if (w > max || h > max) {
+          if (w > h) { h = Math.round((h * max) / w); w = max; }
+          else { w = Math.round((w * max) / h); h = max; }
+        }
+        const cvs = document.createElement('canvas');
+        cvs.width = w; cvs.height = h;
+        const ctx = cvs.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(cvs.toDataURL('image/jpeg', 0.65));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+async function onFiles(id,input){
+  if(!aD[id]) aD[id]={done:false,files:[],note:''};
+  const cur=aD[id].files.length;
+  const slots=3-cur;
+  if(slots<=0){toast('Máximo 3 archivos',true);return;}
+  const picked=Array.from(input.files).slice(0,slots);
+  document.getElementById('sp-'+id).className='upl-spin on';
+  for(const f of picked){
+    if(!f.type.startsWith('image/')) {
+      toast('Solo se permiten imágenes', true);
+      continue;
+    }
+    const b64 = await compressImage(f);
+    aD[id].files.push({url:b64, type:'image/jpeg', name:f.name});
+  }
+  aD[id].done=true;
+  document.getElementById('ac-'+id).className='act-card done';
+  document.getElementById('pill-'+id).className='act-pill pill-done';
+  document.getElementById('pill-'+id).textContent='Listo';
+  document.getElementById('sb-'+id).className='send-btn on';
+  document.getElementById('sp-'+id).className='upl-spin';
+  rTh(id,aD[id].files);
+  updProg();
+  input.value='';
+}
+function pN(id){
+  if(!aD[id]) aD[id]={done:false,files:[],note:''};
+  aD[id].note=document.getElementById('n-'+id)?.value||'';
+}
+async function sendAct(id){
+  if(sending[id]) return;
+  sending[id]=true;
+  pN(id);
+  const btn=document.getElementById('sb-'+id);
+  const orig=btn.innerHTML;
+  btn.innerHTML=ic('check',13,13)+' Enviando...';
+  btn.className='send-btn on';
+  btn.disabled=true;
+  const archivos = (aD[id].files||[]).map(f=>({
+    url:   f.url,
+    type:  f.type,
+    name:  f.name
+  }));
+  try{
+    await dispatch('guardar_actividad',{
+      tipo_de_actividad: slugAct(id),
+      nota:              aD[id].note||'',
+      archivos,
+      cantidad_archivos: archivos.length,
+      tipos_archivos:    archivos.map(f=>f.type)
+    });
+    btn.innerHTML=ic('check',13,13)+' Enviado';
+    btn.className='send-btn on sent';
+    toast('Registro enviado');
+  } catch(e){
+    console.error('Error enviando:', e);
+    btn.innerHTML=orig;
+    btn.className='send-btn on';
+    toast('Error al enviar', true);
+  } finally {
+    btn.disabled=false;
+    setTimeout(()=>{
+      btn.innerHTML=ic('send',13,13)+' Enviar registro';
+      btn.className='send-btn on';
+      sending[id]=false;
+    },2800);
+  }
+}
+async function saveNote(){
+  if(sending['nota']) return;
+  sending['nota']=true;
+  const btn=document.getElementById('note-btn');
+  btn.textContent='Guardando...';
+  btn.disabled=true;
+  try{
+    await dispatch('guardar_nota_diaria',{
+      tipo_de_actividad: 'nota_del_dia',
+      nota: document.getElementById('day-note').value
+    });
+    btn.className='daynote-btn ok';
+    btn.textContent='Guardado';
+    toast('Nota guardada');
+  } catch(e){
+    console.error('Error guardando nota:', e);
+    toast('Error al guardar', true);
+  } finally {
+    btn.disabled=false;
+    setTimeout(()=>{
+      btn.className='daynote-btn';
+      btn.textContent='Guardar';
+      sending['nota']=false;
+    },2000);
+  }
+}
+function chMonth(dir) {
+  navMonth += dir;
+  if(navMonth > 11) { navMonth = 0; navYear++; }
+  else if(navMonth < 0) { navMonth = 11; navYear--; }
+  loadCal();
+}
+async function loadCal(){
+  document.getElementById('ld').style.display='flex';
+  document.getElementById('cal-sec').style.display='none';
+  document.getElementById('det').className='det-wrap';
+  const ms = String(navMonth + 1).padStart(2, '0');
+  const mesStr = `${navYear}-${ms}`;
+  try{
+    console.log("Consultando historial para:", mesStr);
+    const rs = await postNoCors(WH_GET, {
+      accion: 'consultar_calendario',
+      mes: mesStr
+    });
+    const j = await rs.json();
+    calD = j.data || j || {};
+    console.log("Datos recibidos:", calD);
+  } catch(e){
+    console.error('Error consultando historial:', e);
+    toast('Error al consultar historial', true);
+    calD = {};
+  }
+  document.getElementById('ld').style.display='none';
+  document.getElementById('cal-sec').style.display='block';
+  renderCal();
+}
+function renderCal(){
+  const mNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  document.getElementById('cal-month-lbl').textContent = `${mNames[navMonth]} ${navYear}`;
+  const g = document.getElementById('cal-g');
+  g.innerHTML = '';
+  const first = new Date(navYear, navMonth, 1).getDay();
+  const totalDays = new Date(navYear, navMonth + 1, 0).getDate();
+  const currentMonthStr = `${navYear}-${String(navMonth+1).padStart(2,'0')}`;
+  const isCurMonth = TODAY.startsWith(currentMonthStr);
+  const td = parseInt(TODAY.split('-')[2]);
+  let daysArr = [];
+  for(let i=0; i<first; i++) daysArr.push(null);
+  for(let d=1; d<=totalDays; d++) daysArr.push(d);
+  while(daysArr.length % 7 !== 0) daysArr.push(null);
+  const weeks = daysArr.length / 7;
+  for(let w=0; w<weeks; w++) {
+    const row = document.createElement('div');
+    row.className = 'cal-week-row';
+    let weekArtists = 0;
+    for(let i=0; i<7; i++) {
+      const d = daysArr[w*7 + i];
+      const el = document.createElement('div');
+      if(!d) {
+        el.className = 'cal-d emp';
+      } else {
+        const ds = `${currentMonthStr}-${String(d).padStart(2,'0')}`;
+        const info = calD[ds];
+        const isT = isCurMonth && d === td;
+        const isFut = ds > TODAY;
+        let cls = 'cal-d';
+        if (isFut) {
+          cls += ' fut';
+        } else if (info && info.progreso_completadas !== undefined) {
+          const p = info.progreso_completadas;
+          if (p >= 10) cls += ' green';
+          else if (p >= 6 && p <= 9) cls += ' amber';
+          else if (p >= 1 && p <= 5) cls += ' red';
+          else cls += ' nodata';
+        } else {
+          cls += ' nodata';
+        }
+        if (isT) cls += ' today';
+        el.className = cls;
+        el.textContent = d;
+        if (!isFut) {
+          el.onclick = () => openDet(ds, info);
+        }
+        if (info && info.cantidad_artistas) {
+          weekArtists += parseInt(info.cantidad_artistas) || 0;
+        }
+      }
+      row.appendChild(el);
+    }
+    const artEl = document.createElement('div');
+    artEl.className = 'cal-art-sum' + (weekArtists === 0 ? ' zero' : '');
+    artEl.innerHTML = `${ic('artist', 11, 11)} <span>${weekArtists}</span>`;
+    row.appendChild(artEl);
+    g.appendChild(row);
+  }
+}
+function openDet(ds, info){
+  document.getElementById('cal-sec').style.display='none';
+  const mNames = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  const [,mo,d] = ds.split('-');
+  const lbl = `${parseInt(d)} ${mNames[parseInt(mo)-1]}`;
+  let html = `<div class="det-back" onclick="closeDet()">${ic('back',14,14)} Volver</div>`;
+  html += `<div class="det-date">${lbl}</div>`;
+  if (info) {
+    const pComp = info.progreso_completadas || 0;
+    const pTot = info.progreso_total || 10;
+    const pPct = Math.round((pComp/pTot)*100) || 0;
+    html += `<div class="det-sub">${pPct}% completado · ${pComp} de ${pTot}</div>`;
+    html += `<div class="det-card">`;
+    ACTS.forEach(a => {
+      const ad = info.actividades?.[a.id];
+      const done = ad?.done;
+      html += `<div class="det-row"><div class="det-ico">${ic(a.icon,13,13)}</div><div class="det-name">${a.name}</div><span class="det-pill ${done?'y':'n'}">${done?'Completo':'—'}</span></div>`;
+      if (done && ad.archivos && ad.archivos.length) {
+        html += `<div class="det-files"><div class="det-thumb-grid">`;
+        ad.archivos.forEach(f => {
+          if (f.thumbnail && f.driveLink) {
+            html += `<a href="${f.driveLink}" target="_blank" class="det-thumb-wrap">
+                       <img src="${f.thumbnail}" alt="Evidencia">
+                     </a>`;
+          } else if (f.url) {
+             html += `<a href="${f.url}" target="_blank" class="det-a">${ic('link',10,10)}${f.name||'Ver archivo'}</a>`;
+          }
+        });
+        html += `</div></div>`;
+      }
+    });
+    html += `</div>`;
+    if (info.nota) html += `<div class="det-note">${info.nota}</div>`;
+  } else {
+    html += `<div class="det-sub" style="padding:28px 0;text-align:center">Sin registro para este día.</div>`;
+  }
+  const det = document.getElementById('det');
+  det.innerHTML = html;
+  det.className = 'det-wrap on';
+}
+function closeDet(){
+  document.getElementById('det').className='det-wrap';
+  document.getElementById('cal-sec').style.display='block';
+}
+buildActs();
+</script>
+</body>
+</html>
